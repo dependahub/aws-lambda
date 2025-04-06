@@ -1,0 +1,38 @@
+{
+  "name": "@dependahub/aws-lambda",
+  "version": "0.0.0",
+  "description": "AWS Lambda 操作モジュール",
+  "license": "MIT",
+  "author": "DependaHub",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "xo && ava",
+    "build": "rm -rf @types && tsc"
+  },
+  "devDependencies": {
+    "ava": "^6.2.0",
+    "typescript": "^5.8.3",
+    "xo": "^0.60.0"
+  },
+  "homepage": "https://github.com/dependahub/aws-lambda#readme",
+  "bugs": {
+    "url": "https://github.com/dependahub/aws-lambda/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dependahub/aws-lambda.git"
+  },
+  "keywords": [
+    "lambda"
+  ],
+  "dependencies": {
+    "@aws-sdk/client-lambda": "^3.782.0",
+    "@aws-sdk/credential-providers": "^3.782.0"
+  },
+  "xo": {
+    "rules": {
+      "capitalized-comments": "off"
+    }
+  }
+}
