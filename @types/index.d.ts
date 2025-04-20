@@ -2,31 +2,31 @@ export const lambda: LambdaClass;
 export default lambda;
 declare class LambdaClass {
     /**
-     * AWS Lambdaのクライアントを初期化します。
+     * LambdaClientを初期化します。
      * @param {Object} config
-     * @param {string} config.region - AWSリージョン
-     * @param {string} [config.profile='default'] - AWS CLIのプロファイル名
+     * @param {string?} config.region - (Optional) AWSリージョン
+     * @param {string?} config.profile - (Optional) AWS CLIのプロファイル名
      * @returns {void}
      */
     configure(config: {
-        region: string;
-        profile?: string;
+        region: string | null;
+        profile: string | null;
     }): void;
     /**
      * Lambdaを実行し、レスポンスを取得します。
-     * @param {string} functionName
-     * @param {any} payload
+     * @param {string} functionName 送信先のLambda関数名
+     * @param {any?} payload 送信するペイロード
      * @returns {Promise<any>}
      */
-    post(functionName: string, payload: any): Promise<any>;
+    post(functionName: string, payload: any | null): Promise<any>;
     /**
      * 非同期でLambdaを実行します。
      * - レスポンスは受け取りません。
-     * @param {string} functionName
-     * @param {object} payload
-     * @returns {Promise<void>}
+     * @param {string} functionName 送信先のLambda関数名
+     * @param {any?} payload 送信するペイロード
+     * @returns {Promise<import('@aws-sdk/client-lambda').InvokeCommandOutput>}
      */
-    push(functionName: string, payload: object): Promise<void>;
+    push(functionName: string, payload: any | null): Promise<import("@aws-sdk/client-lambda").InvokeCommandOutput>;
     #private;
 }
 //# sourceMappingURL=index.d.ts.map
