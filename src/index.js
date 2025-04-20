@@ -5,27 +5,41 @@ class LambdaClass {
 	#client = new LambdaClient();
 
 	/**
-	 * AWS Lambdaのクライアントを初期化します。
+	 * LambdaClientを初期化します。
 	 * @param {Object} config
-	 * @param {string} config.region - AWSリージョン
-	 * @param {string} [config.profile='default'] - AWS CLIのプロファイル名
+	 * @param {string?} config.region - (Optional) AWSリージョン
+	 * @param {string?} config.profile - (Optional) AWS CLIのプロファイル名
 	 * @returns {void}
 	 */
 	configure(config) {
-		const {region, profile = 'default'} = config;
-		this.#client = new LambdaClient({
-			region,
-			credentials: fromIni({profile}),
-		});
+		const {region, profile} = config;
+		const lambdaConfig = {
+			region: undefined,
+			credentials: undefined,
+		};
+
+		if (region) {
+			lambdaConfig.region = region;
+		}
+
+		if (profile) {
+			lambdaConfig.credentials = fromIni({profile});
+		}
+
+		this.#client = new LambdaClient(lambdaConfig);
 	}
 
 	/**
 	 * Lambdaを実行し、レスポンスを取得します。
-	 * @param {string} functionName
-	 * @param {any} payload
+	 * @param {string} functionName 送信先のLambda関数名
+	 * @param {any?} payload 送信するペイロード
 	 * @returns {Promise<any>}
 	 */
 	async post(functionName, payload) {
+		if (!functionName) {
+			throw new Error('Function name is required.');
+		}
+
 		if (typeof payload === 'object') {
 			payload = JSON.stringify(payload);
 		}
@@ -48,16 +62,20 @@ class LambdaClass {
 	/**
 	 * 非同期でLambdaを実行します。
 	 * - レスポンスは受け取りません。
-	 * @param {string} functionName
-	 * @param {object} payload
-	 * @returns {Promise<void>}
+	 * @param {string} functionName 送信先のLambda関数名
+	 * @param {any?} payload 送信するペイロード
+	 * @returns {Promise<import('@aws-sdk/client-lambda').InvokeCommandOutput>}
 	 */
 	async push(functionName, payload) {
+		if (!functionName) {
+			throw new Error('Function name is required.');
+		}
+
 		if (typeof payload === 'object') {
 			payload = JSON.stringify(payload);
 		}
 
-		await this.#client.send(new InvokeCommand({
+		return this.#client.send(new InvokeCommand({
 			FunctionName: functionName,
 			InvocationType: 'Event',
 			Payload: payload,
