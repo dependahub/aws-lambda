@@ -1,4 +1,4 @@
-[![Node.js Version](https://img.shields.io/badge/node-22.x-brightgreen.svg)](https://nodejs.org/)
+[![Node.js Version](https://img.shields.io/badge/node-24.x-brightgreen.svg)](https://nodejs.org/)
 [![XO code style](https://shields.io/badge/code_style-5ed9c7?logo=xo&labelColor=gray&logoSize=auto)](https://github.com/xojs/xo)
 
 # aws-lambda
@@ -14,6 +14,12 @@ AWS Lambda 操作モジュール
 ```bash
 npm install @dependahub/aws-lambda
 ```
+
+## exports
+
+- **default** - default export は lambda です。
+- **lambda** - 以下で説明するメインモジュールです。
+- **LambdaClass** - lambda の生成元クラスです。異なるLambdaClient設定を使用する場合は new LambdaClass(config) からインスタンスを作成してください。
 
 ## 使用方法
 

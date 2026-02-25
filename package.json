@@ -1,6 +1,6 @@
 {
   "name": "@dependahub/aws-lambda",
-  "version": "0.3.1",
+  "version": "1.1.0",
   "description": "AWS Lambda 操作モジュール",
   "license": "MIT",
   "author": "DependaHub",
@@ -8,16 +8,16 @@
   "type": "module",
   "main": "src/index.js",
   "scripts": {
-    "test": "xo && ava",
-    "build": "rm -rf @types && tsc"
+    "test": "xo && node --test",
+    "build": "rm -rf @types && tsc",
+    "prepack": "npm run build"
   },
   "dependencies": {
     "@aws-sdk/client-lambda": "^3.782.0",
     "@aws-sdk/credential-providers": "^3.782.0"
   },
   "devDependencies": {
-    "ava": "^6.2.0",
-    "typescript": "^5.8.3",
+    "typescript": "^5.9.3",
     "xo": "^0.60.0"
   },
   "homepage": "https://github.com/dependahub/aws-lambda#readme",

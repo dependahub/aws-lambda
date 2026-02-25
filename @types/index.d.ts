@@ -1,17 +1,26 @@
-export const lambda: LambdaClass;
-export default lambda;
-declare class LambdaClass {
+/**
+ * @typedef {{send: (command: InvokeCommand) => Promise<import('@aws-sdk/client-lambda').InvokeCommandOutput>}} MockLambdaClient
+ */
+export class LambdaClass {
+    /**
+     * @param {{region?: string, profile?: string}} [config]
+     * @param {MockLambdaClient} [lambdaClient]
+     */
+    constructor(config?: {
+        region?: string;
+        profile?: string;
+    }, lambdaClient?: MockLambdaClient);
     /**
      * LambdaClientを初期化します。
-     * @param {Object} config
-     * @param {string?} config.region - (Optional) AWSリージョン
-     * @param {string?} config.profile - (Optional) AWS CLIのプロファイル名
+     * - 常に入力された config に基づいて新しいLambdaClientを設定し直します。
+     * @param {{region?: string, profile?: string}} [config]
+     * @param {MockLambdaClient} [lambdaClient] - (Optional) mock用のLambdaClientインスタンス
      * @returns {void}
      */
-    configure(config: {
-        region: string | null;
-        profile: string | null;
-    }): void;
+    configure(config?: {
+        region?: string;
+        profile?: string;
+    }, lambdaClient?: MockLambdaClient): void;
     /**
      * Lambdaを実行し、レスポンスを取得します。
      * @param {string} functionName 送信先のLambda関数名
@@ -29,4 +38,10 @@ declare class LambdaClass {
     push(functionName: string, payload: any | null): Promise<import("@aws-sdk/client-lambda").InvokeCommandOutput>;
     #private;
 }
+export const lambda: LambdaClass;
+export default lambda;
+export type MockLambdaClient = {
+    send: (command: InvokeCommand) => Promise<import("@aws-sdk/client-lambda").InvokeCommandOutput>;
+};
+import { InvokeCommand } from '@aws-sdk/client-lambda';
 //# sourceMappingURL=index.d.ts.map
