@@ -1,2 +1,4 @@
 **/*.spec.js
 **/*.test.js
+.npm-cache
+tsconfig.json

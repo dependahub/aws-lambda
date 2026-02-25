@@ -1,17 +1,30 @@
 import {LambdaClient, InvokeCommand} from '@aws-sdk/client-lambda';
 import {fromIni} from '@aws-sdk/credential-providers';
 
-class LambdaClass {
-	#client = new LambdaClient();
+/**
+ * @typedef {{send: (command: InvokeCommand) => Promise<import('@aws-sdk/client-lambda').InvokeCommandOutput>}} MockLambdaClient
+ */
+
+export class LambdaClass {
+	/** @type {LambdaClient | MockLambdaClient} */
+	#client;
+
+	/**
+	 * @param {{region?: string, profile?: string}} [config]
+	 * @param {MockLambdaClient} [lambdaClient]
+	 */
+	constructor(config = {}, lambdaClient) {
+		this.configure(config, lambdaClient);
+	}
 
 	/**
 	 * LambdaClientを初期化します。
-	 * @param {Object} config
-	 * @param {string?} config.region - (Optional) AWSリージョン
-	 * @param {string?} config.profile - (Optional) AWS CLIのプロファイル名
+	 * - 常に入力された config に基づいて新しいLambdaClientを設定し直します。
+	 * @param {{region?: string, profile?: string}} [config]
+	 * @param {MockLambdaClient} [lambdaClient] - (Optional) mock用のLambdaClientインスタンス
 	 * @returns {void}
 	 */
-	configure(config) {
+	configure(config = {}, lambdaClient) {
 		const {region, profile} = config;
 		const lambdaConfig = {
 			region: undefined,
@@ -26,7 +39,7 @@ class LambdaClass {
 			lambdaConfig.credentials = fromIni({profile});
 		}
 
-		this.#client = new LambdaClient(lambdaConfig);
+		this.#client = lambdaClient || new LambdaClient(lambdaConfig);
 	}
 
 	/**
@@ -36,6 +49,10 @@ class LambdaClass {
 	 * @returns {Promise<any>}
 	 */
 	async post(functionName, payload) {
+		if (!this.#client) {
+			throw new Error('Lambda client is not configured. Please call configure() first.');
+		}
+
 		if (!functionName) {
 			throw new Error('Function name is required.');
 		}
@@ -44,14 +61,17 @@ class LambdaClass {
 			payload = JSON.stringify(payload);
 		}
 
-		const {Payload: lambdaResponse} = await this.#client.send(new InvokeCommand({
-			FunctionName: functionName,
-			InvocationType: 'RequestResponse',
-			Payload: payload,
-			LogType: 'Tail',
-		}));
+		const response = await (async () => {
+			const command = new InvokeCommand({
+				FunctionName: functionName,
+				InvocationType: 'RequestResponse',
+				Payload: payload,
+				LogType: 'Tail',
+			});
+			const {Payload} = await this.#client.send(command);
+			return Payload ? Buffer.from(Payload).toString('utf8') : null;
+		})();
 
-		const response = Buffer.from(lambdaResponse).toString('utf8');
 		try {
 			return JSON.parse(response);
 		} catch {
@@ -67,6 +87,10 @@ class LambdaClass {
 	 * @returns {Promise<import('@aws-sdk/client-lambda').InvokeCommandOutput>}
 	 */
 	async push(functionName, payload) {
+		if (!this.#client) {
+			throw new Error('Lambda client is not configured. Please call configure() first.');
+		}
+
 		if (!functionName) {
 			throw new Error('Function name is required.');
 		}
@@ -75,11 +99,12 @@ class LambdaClass {
 			payload = JSON.stringify(payload);
 		}
 
-		return this.#client.send(new InvokeCommand({
+		const command = new InvokeCommand({
 			FunctionName: functionName,
 			InvocationType: 'Event',
 			Payload: payload,
-		}));
+		});
+		return this.#client.send(command);
 	}
 }
 
