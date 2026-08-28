@@ -36,12 +36,17 @@
     "aws",
     "lambda"
   ],
-  "xo": {
-    "ignore": [
-      "@types"
-    ],
-    "rules": {
-      "capitalized-comments": "off"
+  "xo": [
+    {
+      "ignores": [
+        "@types/**"
+      ]
+    },
+    {
+      "rules": {
+        "capitalized-comments": "off",
+        "n/prefer-global/buffer": "off"
+      }
     }
-  }
+  ]
 }
