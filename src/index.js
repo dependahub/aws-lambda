@@ -20,12 +20,15 @@ export class LambdaClass {
 	/**
 	 * LambdaClientを初期化します。
 	 * - 常に入力された config に基づいて新しいLambdaClientを設定し直します。
-	 * @param {{region?: string, profile?: string}} [config]
+	 * - Lambda認証: Lambda環境で実行される場合は特に認証情報を指定する必要はありません。
+	 * - ローカル認証: Profileで認証する場合は profile を指定してください。（regionは任意）
+	 * - IAM認証: AccessKeyIdとSecretAccessKeyで認証する場合は両方を指定し、regionも必要です。
+	 * @param {{region?: string, profile?: string, accessKeyId?: string, secretAccessKey?: string}} [config]
 	 * @param {MockLambdaClient} [lambdaClient] - (Optional) mock用のLambdaClientインスタンス
 	 * @returns {void}
 	 */
 	configure(config = {}, lambdaClient) {
-		const {region, profile} = config;
+		const {region, profile, accessKeyId, secretAccessKey} = config;
 		const lambdaConfig = {
 			region: undefined,
 			credentials: undefined,
@@ -37,6 +40,13 @@ export class LambdaClass {
 
 		if (profile) {
 			lambdaConfig.credentials = fromIni({profile});
+		}
+
+		if (accessKeyId && secretAccessKey) {
+			lambdaConfig.credentials = {
+				accessKeyId,
+				secretAccessKey,
+			};
 		}
 
 		this.#client = lambdaClient || new LambdaClient(lambdaConfig);
