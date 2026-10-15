@@ -5,6 +5,9 @@
 フォーマットは [Keep a Changelog](https://keepachangelog.com/ja/1.1.0/)、
 バージョニングは [Semantic Versioning](https://semver.org/lang/ja/) に準拠します。
 
+## [1.2.0]
+- IAM認証に対応しました。
+
 ## [Unreleased]
 
 ## [1.1.0] - 2026-02-25
